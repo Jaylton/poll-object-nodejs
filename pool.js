@@ -1,50 +1,50 @@
-class ObjectPool {
-    constructor(createFn, size = 10) {
-        this.createFn = createFn;
-        this.pool = [];
-        this.inUse = new Map(); // Map para rastrear objetos em uso e suas promessas
+const http = require('http');
 
-        for (let i = 0; i < size; i++) {
-            this.pool.push(this.createFn());
-        }
+class PollObject {
+    constructor(requestId, interval = 1000) {
+        this.requestId = requestId;
+        this.interval = interval;
+        this.polling = false;
     }
 
-    acquire() {
-        if (this.pool.length > 0) {
-            const obj = this.pool.pop();
-            return obj;
-        } else {
-            throw new Error("No available objects in the pool");
-        }
+    startPolling() {
+        this.polling = true;
+        console.log(`Polling started for requestId: ${this.requestId}`);
+        this.poll();
     }
 
-    release(obj) {
-        if (this.inUse.has(obj)) {
-            this.inUse.delete(obj); // Remove o objeto do map de "in use"
-            this.pool.push(obj); // Devolve o objeto ao pool
-        } else {
-            throw new Error("Object not from pool");
-        }
+    stopPolling() {
+        this.polling = false;
+        console.log(`Polling stopped for requestId: ${this.requestId}`);
     }
 
-    execute(query) {
-        try {
-            const connection = this.acquire();
-            const promise = connection.execute(query);
-            this.inUse.set(connection, promise);
-            return { connection, promise }; // Retorna a conexão e a promessa associada
-        } catch (error) {
-            throw new Error("Error acquiring object from pool: " + error.message);
-        }
-    }
+    // Polling method
+    poll() {
+        if (!this.polling) return;
 
-    // Verifica se a promessa associada ao objeto já foi resolvida
-    checkResult(connection) {
-        if (this.inUse.has(connection)) {
-            return this.inUse.get(connection); // Retorna a promessa associada
-        }
-        throw new Error("Object not in use");
+        http.get(`http://localhost:3000/check/${this.requestId}`, (res) => {
+            let data = '';
+
+            res.on('data', chunk => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                const response = JSON.parse(data);
+
+                if (response.status === 'completed') {
+                    console.log(`Result for requestId ${this.requestId}:`, response.result);
+                    this.stopPolling();
+                } else {
+                    console.log('Query still in progress...');
+                    setTimeout(() => this.poll(), this.interval);
+                }
+            });
+        }).on('error', (err) => {
+            console.error('Error in poll:', err.message);
+            this.stopPolling();
+        });
     }
 }
 
-module.exports = ObjectPool;
+module.exports = PollObject;
