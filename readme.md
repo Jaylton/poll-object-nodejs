@@ -20,7 +20,7 @@ Este projeto demonstra a implementação do Poll Object Pattern em uma aplicaç�
 ## Como Executar
 1. Clone este repositório:
   ```
-  git clone https://github.com/seu-usuario/poll-object-nodejs.git
+  git clone https://github.com/Jaylton/poll-object-nodejs.git
   cd poll-object-nodejs
   ```
 
