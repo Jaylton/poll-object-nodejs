@@ -7,10 +7,10 @@ class PollObject {
         this.polling = false;
     }
 
-    startPolling() {
+    startPolling(index = 0) {
         this.polling = true;
         console.log(`Polling started for requestId: ${this.requestId}`);
-        this.poll();
+        this.poll(index);
     }
 
     stopPolling() {
@@ -19,9 +19,8 @@ class PollObject {
     }
 
     // Polling method
-    poll() {
+    poll(index) {
         if (!this.polling) return;
-
         http.get(`http://localhost:3000/check/${this.requestId}`, (res) => {
             let data = '';
 
@@ -31,13 +30,12 @@ class PollObject {
 
             res.on('end', () => {
                 const response = JSON.parse(data);
-
                 if (response.status === 'completed') {
-                    console.log(`Result for requestId ${this.requestId}:`, response.result);
+                    console.log(`Result for client ${index} and requestId ${this.requestId}:`, response.result);
                     this.stopPolling();
                 } else {
-                    console.log('Query still in progress...');
-                    setTimeout(() => this.poll(), this.interval);
+                    console.log(`Query for client ${index} still in progress...`);
+                    setTimeout(() => this.poll(index), this.interval);
                 }
             });
         }).on('error', (err) => {
