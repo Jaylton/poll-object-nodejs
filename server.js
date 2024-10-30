@@ -1,17 +1,18 @@
 const http = require('http');
 const Connection = require('./connection');
+const { randomUUID } = require('crypto');
 
 const connection = new Connection();
 
 const activeRequests = new Map();
 
-const server = http.createServer((req, res) => {
+const server =  http.createServer((req, res) => {
     if (req.url === '/start') {
         // Init async query
         try {
             const promise = connection.execute(`SELECT * FROM example`);
 
-            const requestId = Date.now(); // Unique ID for the request
+            const requestId = randomUUID(); // Unique ID for the request
             activeRequests.set(requestId, { promise, completed: false, result: null });
 
             // Check if the query was completed
@@ -37,7 +38,7 @@ const server = http.createServer((req, res) => {
         }
     } else if (req.url.startsWith('/check')) {
         const urlParts = req.url.split('/'); // get the request ID from the URL
-        const requestId = Number(urlParts[2]);
+        const requestId = urlParts[2];
 
         if (activeRequests.has(requestId)) {
             const requestInfo = activeRequests.get(requestId);
@@ -54,9 +55,8 @@ const server = http.createServer((req, res) => {
                 res.end(JSON.stringify({ requestId, status: 'in progress' }));
             }
         } else {
-
             res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end('Request ID not found or already completed');
+            res.end(JSON.stringify({error: 'Request ID not found or already completed'}));
         }
     }
 });
