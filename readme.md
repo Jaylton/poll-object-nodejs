@@ -1,9 +1,14 @@
 # Poll Object (Lifecycle Management Pattern) Client-Server Application with NodeJS
 Este projeto demonstra a implementação do Poll Object Pattern em uma aplicação simples de cliente-servidor. O cliente inicia uma operação assíncrona no servidor (como uma query de banco de dados) e usa o Poll Object para consultar periodicamente o status da operação até que o resultado esteja disponível.
 
+## Equipe
+- Jaylton Alencar Pereira
+- Rodrigo Beltrao Valenca
+
 ## Estrutura do Projeto
 - **server.js**: Servidor que processa operações assíncronas e fornece o status da execução ao cliente.
 - **client.js**: Cliente que inicia a operação assíncrona no servidor e usa o Poll Object para acompanhar o progresso da execução.
+- **multi-client.js**: Várias requisições são feitas para o servidor.
 - **pool.js**: Implementação de um pool de objetos que gerencia conexões.
 - **connection.js**: Simula uma conexão de banco de dados que processa queries.
 
@@ -12,7 +17,6 @@ Este projeto demonstra a implementação do Poll Object Pattern em uma aplicaç�
 2. O servidor processa a operação de forma assíncrona e retorna um requestId para o cliente.
 3. O cliente cria um Poll Object e usa esse objeto para consultar periodicamente o status da operação no servidor.
 4. Quando a operação estiver concluída, o servidor responde com o resultado, e o cliente exibe esse resultado, parando o polling.
-
 
 ## Requisitos
 - Node.js (versão 12 ou superior).
@@ -35,3 +39,6 @@ Este projeto demonstra a implementação do Poll Object Pattern em uma aplicaç�
   node client.js
   ```
   O cliente enviará uma requisição para iniciar uma operação no servidor e usará o Poll Object para consultar periodicamente o status da operação até que o resultado seja retornado.
+
+
+## Comentários
