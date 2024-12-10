@@ -1,44 +1,31 @@
-const axios = require('axios');
+const PollObject = require('./pollObjectBase');
 
-class PollOperation {
-    constructor(pollInterval, maxAttempts, operation) {
-        this.pollInterval = pollInterval; // Intervalo em ms
-        this.maxAttempts = maxAttempts; // Máximo de tentativas
-        this.operation = operation; // Operação a ser executada periodicamente
-        this.attempts = 0; // Contador de tentativas
-        this.timer = null; // Referência ao intervalo
-    }
-
-    start() {
-        console.log('Starting poll...');
-        this.timer = setInterval(async () => {
-            this.attempts++;
-            console.log(`Attempt ${this.attempts}`);
-
-            const result = await this.operation();
-
-            if (result || this.attempts >= this.maxAttempts) {
-                this.stop(); // Para o polling quando bem-sucedido ou atinge o máximo
-            }
-        }, this.pollInterval);
-    }
-
-    stop() {
-        clearInterval(this.timer);
-        console.log('Polling stopped.');
-    }
-}
-
-// Poll Operation específico para a operação remota
-const pollOperation = new PollOperation(1000, 10, async () => {
+const pollOperation = new PollObject(1000, 10, async (method, args) => {
     try {
-        const response = await axios.get('http://localhost:3000/remote/operation');
-        console.log('Response:', response.data);
-        return response.data.status === 'completed';
+        const result = await method(...args);
+        console.log('Result:', result);
+        return result !== undefined && result !== null; // Considere válidos resultados não nulos/indefinidos
     } catch (error) {
-        console.error('Error during polling:', error.message);
+        console.error('Error polling:', error.message);
         return false;
     }
 });
+
+pollOperation.start = function (method, args) {
+    if (this.timer) {
+        console.log('Polling already in progress.');
+        return;
+    }
+
+    console.log('Starting Poll Object...');
+    this.timer = setInterval(async () => {
+        this.attempts++;
+        console.log(`Attempt ${this.attempts}`);
+        const result = await this.operation(method, args);
+        if (result || this.attempts >= this.maxAttempts) {
+            this.stop();
+        }
+    }, this.pollInterval);
+};
 
 module.exports = { pollOperation };

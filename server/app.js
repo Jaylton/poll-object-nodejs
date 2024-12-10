@@ -1,15 +1,20 @@
 const express = require('express');
-const logger = require('./middleware/logger');
-const remoteRoutes = require('./routes/remote');
+const dispatcher = require('./middleware/dispatcher');
+const lookupService = require('./services/lookupService');
 
 const app = express();
 const port = 3000;
 
-// Middleware
-app.use(logger);
+app.use(express.json()); // Para requisições JSON
 
-// Rotas
-app.use('/remote', remoteRoutes);
+// Rota principal do middleware
+app.post('/rpc', dispatcher);
+
+// Serviço de descoberta
+app.get('/lookup', (req, res) => {
+    const objects = lookupService.getAvailableObjects();
+    res.json(objects);
+});
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
