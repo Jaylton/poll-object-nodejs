@@ -1,7 +1,10 @@
+const registry = new Map();
+
 module.exports = {
-    getAvailableObjects() {
-        return [
-            { name: 'operation', methods: ['computeTask'] },
-        ];
+    register(name, object) {
+        registry.set(name, object);
+    },
+    get(name) {
+        return registry.get(name);
     },
 };

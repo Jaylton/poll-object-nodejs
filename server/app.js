@@ -1,21 +1,26 @@
 const express = require('express');
 const dispatcher = require('./middleware/dispatcher');
-const lookupService = require('./services/lookupService');
+const operation = require('./objects/operation');
+const lookup = require('./services/lookupService');
 
 const app = express();
-const port = 3000;
+app.use(express.json());
 
-app.use(express.json()); // Para requisições JSON
+// Registra os objetos remotos
+lookup.register('operation', operation);
 
-// Rota principal do middleware
-app.post('/rpc', dispatcher);
+// Rota para invocar operações
+app.post('/invoke', dispatcher);
 
-// Serviço de descoberta
-app.get('/lookup', (req, res) => {
-    const objects = lookupService.getAvailableObjects();
-    res.json(objects);
+// Rota para consultar status das operações
+const taskManager = require('./services/taskManager');
+app.get('/status/:taskId', (req, res) => {
+    const taskId = req.params.taskId;
+    res.json(taskManager.getTaskStatus(taskId));
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+// Inicia o servidor
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
