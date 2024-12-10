@@ -5,7 +5,9 @@ function simulateOperation(currentState) {
     }
 
     // Atualiza aleatoriamente para "completed" ou mantém "in_progress"
-    const success = Math.random() > 0.7;
+    const randomValue = Math.random();
+    const success = randomValue > 0.7;
+    console.log(`random: ${randomValue}`);
     if (success) {
         return { status: 'completed', success: true };
     }

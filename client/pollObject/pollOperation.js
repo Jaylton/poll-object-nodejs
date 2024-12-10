@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-class PollObject {
+class PollOperation {
     constructor(pollInterval, maxAttempts, operation) {
         this.pollInterval = pollInterval; // Intervalo em ms
         this.maxAttempts = maxAttempts; // Máximo de tentativas
@@ -30,7 +30,7 @@ class PollObject {
 }
 
 // Poll Operation específico para a operação remota
-const pollOperation = new PollObject(1000, 10, async () => {
+const pollOperation = new PollOperation(1000, 10, async () => {
     try {
         const response = await axios.get('http://localhost:3000/remote/operation');
         console.log('Response:', response.data);
