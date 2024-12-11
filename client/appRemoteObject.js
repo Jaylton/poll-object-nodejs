@@ -1,4 +1,6 @@
 const { pollRemoteObject } = require('./pollObject/pollRemoteObject');
+const { NUM_CLIENT } = require('./constants');
+
 const proxy = require('./proxy/remoteProxy');
 
 class RemoteObject {

@@ -1,14 +1,22 @@
 class PollObject {
+    static sumDurations = 0;
+    static numCalls = 0;
+
     constructor(pollInterval, maxAttempts, operation) {
+        PollObject.numCalls += 1;
         this.pollInterval = pollInterval;
         this.maxAttempts = maxAttempts;
         this.operation = operation;
         this.attempts = 0;
         this.timer = null;
         this.isPolling = false;
+
+        this.startTime = 0;
+        this.endTime = 0;
     }
 
     start(method, args) {
+        this.startTime = performance.now()
         if (this.timer) {
             console.log('Polling already in progress.');
             return;
@@ -36,6 +44,11 @@ class PollObject {
             this.timer = null;
             this.isPolling = false; // Atualiza o estado de polling para inativo
             console.log('Polling stopped.');
+            this.endTime = performance.now()
+            console.log(`single duration: ${(this.endTime - this.startTime)}ms`);
+            PollObject.sumDurations += (this.endTime - this.startTime);
+            console.log(`sumDuration: ${PollObject.sumDurations}ms`)
+            console.log(`avgDuration: ${PollObject.sumDurations/PollObject.numCalls}ms`)
         }
     }
 }
