@@ -1,6 +1,7 @@
 class PollObject {
     static sumDurations = 0;
     static numCalls = 0;
+    static maxAttempts = 0;
 
     constructor(pollInterval, maxAttempts, operation) {
         PollObject.numCalls += 1;
@@ -47,8 +48,10 @@ class PollObject {
             this.endTime = performance.now()
             console.log(`single duration: ${(this.endTime - this.startTime)}ms`);
             PollObject.sumDurations += (this.endTime - this.startTime);
+            PollObject.maxAttempts = Math.max(this.attempts, PollObject.maxAttempts)
             console.log(`sumDuration: ${PollObject.sumDurations}ms`)
             console.log(`avgDuration: ${PollObject.sumDurations/PollObject.numCalls}ms`)
+            console.log(`maxAttempt: ${PollObject.maxAttempts}`)
         }
     }
 }

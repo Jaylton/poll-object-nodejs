@@ -13,7 +13,7 @@ class RemoteObject {
             this.isComplete = status == 'completed';
 
             if (this.isComplete) {
-                console.log('Result:', result);
+                // console.log('Result:', result);
             }
 
             return this.isComplete;

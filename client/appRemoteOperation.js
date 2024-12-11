@@ -8,7 +8,7 @@ const operation = async (getStatusMethod) => {
         const { status, result } = response;
 
         if (status === 'completed') {
-            console.log('Result:', result);
+            // console.log('Result:', result);
             return true; // Interrompe o polling
         }
 

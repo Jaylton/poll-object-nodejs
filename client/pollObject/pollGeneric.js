@@ -1,12 +1,14 @@
 const PollObject = require('./pollObjectBase');
+const { POLL_INTERVAL } = require('../constants');
 
-const pollGeneric = () => new PollObject(1000, 10, async (getStatusMethod) => {
+
+const pollGeneric = () => new PollObject(POLL_INTERVAL, 50, async (getStatusMethod) => {
     try {
         const response = await getStatusMethod();
         const { status, result } = response;
 
         if (status === 'completed') {
-            console.log('Result:', result);
+            // console.log('Result:', result);
             return true; // Interrompe o polling
         }
 

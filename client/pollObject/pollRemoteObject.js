@@ -1,7 +1,8 @@
 const PollObject = require('./pollObjectBase');
+const { POLL_INTERVAL } = require('../constants');
 
 const pollRemoteObject = (remoteObject, taskId) => new PollObject(
-    1000, 10, () => remoteObject.fetchResult(taskId)
+    POLL_INTERVAL, 50, () => remoteObject.fetchResult(taskId)
 );
 
 module.exports = { pollRemoteObject };
